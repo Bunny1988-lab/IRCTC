@@ -1,3 +1,4 @@
+
 package com.irctc.harbin;
 
 import java.util.List;
@@ -14,6 +15,7 @@ public class Ticket {
 
     public String generateTicketSummary() {
         StringBuilder sb = new StringBuilder();
+
         sb.append("\n==================================================================\n");
         sb.append("                 INDIAN RAILWAYS E-TICKET RECEIPT                 \n");
         sb.append("==================================================================\n");
@@ -21,7 +23,7 @@ public class Ticket {
         sb.append(String.format(" Status    : %-20s Date: %-10s%n", booking.getStatus(), booking.getTravelDate()));
         sb.append("------------------------------------------------------------------\n");
         sb.append(String.format(" Train     : %s - %s%n", booking.getTrain().getTrainNumber(), booking.getTrain().getTrainName()));
-        sb.append(String.format(" Route     : %s -> %s%n", booking.getSourceStation(), booking.getDestinationStation()));
+        sb.append(String.format(" Route     : %s -> %s%n", booking.getSourceCity(), booking.getDestinationCity()));
         sb.append(String.format(" Class     : %-20s Booked By: %s%n", booking.getTravelClass(), booking.getBookedByUsername()));
         sb.append("------------------------------------------------------------------\n");
         sb.append(" PASSENGER & SEAT ALLOCATION:\n");
@@ -29,8 +31,10 @@ public class Ticket {
         sb.append(" ----------------------------------------------------------------\n");
 
         List<Seat> seats = booking.getAllocatedSeats();
+
         for (int i = 0; i < seats.size(); i++) {
             Seat s = seats.get(i);
+
             sb.append(String.format(" %-4d | %-22s | %-8d | %-12s%n",
                     (i + 1), s.getPassengerName(), s.getSeatNumber(), s.getBerthType()));
         }
@@ -40,6 +44,7 @@ public class Ticket {
         sb.append("==================================================================\n");
         sb.append("   Thank you for choosing IRCTC. Please carry a valid Photo ID!   \n");
         sb.append("==================================================================\n");
+
         return sb.toString();
     }
 
@@ -47,11 +52,4 @@ public class Ticket {
         System.out.println(generateTicketSummary());
     }
 
-    public String getTicketId() {
-        return ticketId;
-    }
-
-    public Booking getBooking() {
-        return booking;
-    }
 }
