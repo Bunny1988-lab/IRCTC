@@ -1,13 +1,15 @@
+
 package com.irctc.aditya;
 
 import java.util.regex.Pattern;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.time.format.DateTimeFormatter;
 
 public class InputValidator {
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     private static final Pattern PHONE_PATTERN = Pattern.compile("^[6-9]\\d{9}$");
-    private static final Pattern PNR_PATTERN = Pattern.compile("^\\d{10}$");
-
     public static class ValidationException extends Exception {
         public ValidationException(String message) {
             super(message);
@@ -53,27 +55,30 @@ public class InputValidator {
         }
     }
 
-    public static void validatePnr(String pnr) throws ValidationException {
-        if (pnr == null || !PNR_PATTERN.matcher(pnr.trim()).matches()) {
-            throw new ValidationException("PNR must be an exact 10-digit numeric code.");
-        }
-    }
-
-    public static void validateStationCode(String code) throws ValidationException {
-        if (code == null || code.trim().length() < 2 || code.trim().length() > 5) {
-            throw new ValidationException("Station code must be 2 to 5 characters (e.g., NDLS, CNB, BSB).");
-        }
-    }
-
     public static void validateTrainNumber(String trainNumber) throws ValidationException {
         if (trainNumber == null || !trainNumber.trim().matches("^\\d{5}$")) {
             throw new ValidationException("Train number must be a 5-digit numeric string (e.g., 12301, 22436).");
         }
     }
 
-    public static void validateChoice(int choice, int min, int max) throws ValidationException {
-        if (choice < min || choice > max) {
-            throw new ValidationException("Invalid choice: " + choice + ". Please select between " + min + " and " + max + ".");
+    public static void validateTravelDate(String travelDate) throws ValidationException {
+        if (travelDate == null || !travelDate.trim().matches("^\\d{4}-\\d{2}-\\d{2}$")) {
+            throw new ValidationException("Invalid date format. Please enter the date as YYYY-MM-DD.");
+        }
+
+        try {
+            LocalDate date = LocalDate.parse(
+                    travelDate.trim(),
+                    DateTimeFormatter.ISO_LOCAL_DATE
+            );
+
+            if (date.isBefore(LocalDate.now())) {
+                throw new ValidationException("Travel date cannot be in the past.");
+            }
+
+        } catch (DateTimeParseException e) {
+            throw new ValidationException("Invalid calendar date. Please enter a valid date.");
         }
     }
+
 }
