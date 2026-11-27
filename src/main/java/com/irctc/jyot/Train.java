@@ -1,7 +1,7 @@
+
 package com.irctc.jyot;
 
 import com.irctc.harbin.Coach;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,22 +10,17 @@ public class Train implements Comparable<Train> {
     private String trainNumber;
     private String trainName;
     private String trainType;
-    private String sourceStation;
-    private String destinationStation;
+    private String sourceCity;
+    private String destinationCity;
     private Route route;
     private List<Coach> coaches;
-
-    public Train() {
-        this.coaches = new ArrayList<>();
-    }
-
     public Train(String trainNumber, String trainName, String trainType,
-                 String sourceStation, String destinationStation, Route route) {
+                 String sourceCity, String destinationCity, Route route) {
         this.trainNumber = trainNumber;
         this.trainName = trainName;
         this.trainType = trainType;
-        this.sourceStation = sourceStation.toUpperCase();
-        this.destinationStation = destinationStation.toUpperCase();
+        this.sourceCity = sourceCity;
+        this.destinationCity = destinationCity;
         this.route = route;
         this.coaches = new ArrayList<>();
     }
@@ -75,61 +70,33 @@ public class Train implements Comparable<Train> {
         return trainNumber;
     }
 
-    public void setTrainNumber(String trainNumber) {
-        this.trainNumber = trainNumber;
-    }
-
     public String getTrainName() {
         return trainName;
-    }
-
-    public void setTrainName(String trainName) {
-        this.trainName = trainName;
     }
 
     public String getTrainType() {
         return trainType;
     }
 
-    public void setTrainType(String trainType) {
-        this.trainType = trainType;
+    public String getSourceCity() {
+        return sourceCity;
     }
 
-    public String getSourceStation() {
-        return sourceStation;
-    }
-
-    public void setSourceStation(String sourceStation) {
-        this.sourceStation = sourceStation;
-    }
-
-    public String getDestinationStation() {
-        return destinationStation;
-    }
-
-    public void setDestinationStation(String destinationStation) {
-        this.destinationStation = destinationStation;
+    public String getDestinationCity() {
+        return destinationCity;
     }
 
     public Route getRoute() {
         return route;
     }
 
-    public void setRoute(Route route) {
-        this.route = route;
-    }
-
     public List<Coach> getCoaches() {
         return coaches;
-    }
-
-    public void setCoaches(List<Coach> coaches) {
-        this.coaches = coaches;
     }
 
     @Override
     public String toString() {
         return String.format("%-6s | %-24s | %-12s | %s -> %s | Total Seats: %d",
-                trainNumber, trainName, trainType, sourceStation, destinationStation, getTotalSeats());
+                trainNumber, trainName, trainType, sourceCity, destinationCity, getTotalSeats());
     }
 }
