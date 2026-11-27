@@ -1,3 +1,4 @@
+
 package com.irctc.harbin;
 
 import com.irctc.jyot.Train;
@@ -12,34 +13,29 @@ public class Booking {
     private Train train;
     private String travelClass;
     private String travelDate;
-    private String sourceStation;
-    private String destinationStation;
+    private String sourceCity;
+    private String destinationCity;
     private List<Seat> allocatedSeats;
-    private List<String> passengerNames;
     private double totalFare;
     private String status;
-    private String bookingTimestamp;
 
     public Booking(String pnr, String bookedByUsername, Train train, String travelClass,
-                   String travelDate, String sourceStation, String destinationStation,
+                   String travelDate, String sourceCity, String destinationCity,
                    double totalFare, String status) {
         this.pnr = pnr;
         this.bookedByUsername = bookedByUsername;
         this.train = train;
         this.travelClass = travelClass;
         this.travelDate = travelDate;
-        this.sourceStation = sourceStation.toUpperCase();
-        this.destinationStation = destinationStation.toUpperCase();
+        this.sourceCity = sourceCity.trim();
+        this.destinationCity = destinationCity.trim();
         this.totalFare = totalFare;
         this.status = status;
         this.allocatedSeats = new ArrayList<>();
-        this.passengerNames = new ArrayList<>();
-        this.bookingTimestamp = java.time.LocalDate.now().toString();
     }
 
-    public void addAllocatedSeat(Seat seat, String passengerName) {
+    public void addAllocatedSeat(Seat seat) {
         allocatedSeats.add(seat);
-        passengerNames.add(passengerName);
     }
 
     public String getPnr() {
@@ -62,20 +58,16 @@ public class Booking {
         return travelDate;
     }
 
-    public String getSourceStation() {
-        return sourceStation;
+    public String getSourceCity() {
+        return sourceCity;
     }
 
-    public String getDestinationStation() {
-        return destinationStation;
+    public String getDestinationCity() {
+        return destinationCity;
     }
 
     public List<Seat> getAllocatedSeats() {
         return allocatedSeats;
-    }
-
-    public List<String> getPassengerNames() {
-        return passengerNames;
     }
 
     public double getTotalFare() {
@@ -90,14 +82,12 @@ public class Booking {
         this.status = status;
     }
 
-    public String getBookingTimestamp() {
-        return bookingTimestamp;
-    }
-
     @Override
     public String toString() {
-        return String.format("PNR: %-10s | Train: %-5s %-16s | %s -> %s | Date: %-10s | Status: %-9s | Fare: Rs. %.2f",
+        return String.format(
+                "PNR: %-10s | Train: %-5s %-16s | %s -> %s | Date: %-10s | Status: %-9s | Fare: Rs. %.2f",
                 pnr, train.getTrainNumber(), train.getTrainName(),
-                sourceStation, destinationStation, travelDate, status, totalFare);
+                sourceCity, destinationCity, travelDate, status, totalFare
+        );
     }
 }
