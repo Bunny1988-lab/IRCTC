@@ -1,3 +1,4 @@
+
 package com.irctc.divi;
 
 import com.irctc.aditya.ConsoleUtil;
@@ -77,8 +78,6 @@ public class Main {
             } else if (choice == 6) {
                 running = false;
                 ConsoleUtil.printInfo("Thank you for using IRCTC Railway Reservation. Goodbye!");
-            } else {
-                ConsoleUtil.printError("Invalid selection. Please choose an option between 1 and 6.");
             }
         }
     }
@@ -109,11 +108,8 @@ public class Main {
             } else if (choice == 5) {
                 handleCheckPnrStatus();
             } else if (choice == 6) {
-                authService.logout();
                 loggedIn = false;
                 ConsoleUtil.printSuccess("Logged out successfully.");
-            } else {
-                ConsoleUtil.printError("Invalid option.");
             }
         }
     }
@@ -144,11 +140,8 @@ public class Main {
             } else if (choice == 5) {
                 handleViewAllBookings();
             } else if (choice == 6) {
-                authService.logout();
                 loggedIn = false;
                 ConsoleUtil.printSuccess("Admin logged out successfully.");
-            } else {
-                ConsoleUtil.printError("Invalid option.");
             }
         }
     }
@@ -195,42 +188,55 @@ public class Main {
 
     public void handleTrainSearch() {
         ConsoleUtil.printSubHeader("Search Trains by Route");
-        String src = ConsoleUtil.readString("Enter Source Station Code (e.g., NDLS, BCT)");
-        String dest = ConsoleUtil.readString("Enter Destination Station Code (e.g., HWH, BSB)");
+
+        String src = ConsoleUtil.readString("Enter Source City (e.g., New Delhi, Mumbai)");
+        String dest = ConsoleUtil.readString("Enter Destination City (e.g., Varanasi, Kolkata)");
 
         List<Train> results = trainService.searchTrains(src, dest);
+
         if (results.isEmpty()) {
-            ConsoleUtil.printInfo("No trains found running directly from " + src.toUpperCase() + " to " + dest.toUpperCase() + ".");
+            ConsoleUtil.printInfo("No trains found between " + src + " and " + dest + ".");
         } else {
             System.out.println("\nMatching Trains (" + results.size() + " found):");
-            System.out.printf("%-6s | %-24s | %-12s | %-6s -> %-6s%n", "Train#", "Train Name", "Type", "Source", "Dest");
+
+            System.out.printf("%-6s | %-24s | %-12s | %-20s -> %-20s%n",
+                    "Train#", "Train Name", "Type", "Source City", "Destination City");
+
             ConsoleUtil.printDivider();
+
             for (Train t : results) {
-                System.out.printf("%-6s | %-24s | %-12s | %-6s -> %-6s%n",
-                        t.getTrainNumber(), t.getTrainName(), t.getTrainType(), t.getSourceStation(), t.getDestinationStation());
+                System.out.printf("%-6s | %-24s | %-12s | %-20s -> %-20s%n",
+                        t.getTrainNumber(), t.getTrainName(), t.getTrainType(),
+                        t.getSourceCity(), t.getDestinationCity());
             }
 
-            String viewDetails = ConsoleUtil.readString("\nEnter Train Number to inspect route/seats (or press Enter to skip)");
+            String viewDetails = ConsoleUtil.readString(
+                    "\nEnter Train Number to inspect route/seats (or press Enter to skip)"
+            );
+
             if (!viewDetails.isEmpty()) {
                 trainService.displayTrainDetails(viewDetails);
             }
         }
+
         ConsoleUtil.pressEnterToContinue();
     }
 
     public void handleViewStations() {
         ConsoleUtil.printSubHeader("Railway Stations Directory");
+
         List<Station> stations = trainService.getAllStations();
-        System.out.printf("%-6s | %-25s | %-18s | %s%n", "Code", "Station Name", "City", "Platforms");
+
+        System.out.printf("%-25s | %-18s | %s%n",
+                "Station Name", "City", "Platforms");
+
         ConsoleUtil.printDivider();
+
         for (Station s : stations) {
             System.out.println(s);
         }
-        ConsoleUtil.pressEnterToContinue();
-    }
 
-    public void handleViewAllStations() {
-        handleViewStations();
+        ConsoleUtil.pressEnterToContinue();
     }
 
     public void handleCheckPnrStatus() {
@@ -238,19 +244,23 @@ public class Main {
         String pnr = ConsoleUtil.readString("Enter 10-Digit PNR Number");
 
         Booking booking = bookingService.getPnrStatus(pnr);
+
         if (booking == null) {
             ConsoleUtil.printError("No booking record found for PNR: " + pnr);
         } else {
             Ticket ticket = new Ticket("TKT-" + pnr.substring(0, Math.min(6, pnr.length())), booking);
             ticket.printTicket();
         }
+
         ConsoleUtil.pressEnterToContinue();
     }
 
     public void handleBookTicket(Passenger passenger) {
         ConsoleUtil.printSubHeader("Book Railway Ticket");
-        String trainNumber = ConsoleUtil.readString("Enter Train Number (e.g., 12301, 22436)");
+
+        String trainNumber = ConsoleUtil.readString("Enter Train Number (e.g., 12011, 12012):");
         Train train = trainService.getTrainByNumber(trainNumber);
+
         if (train == null) {
             ConsoleUtil.printError("Train " + trainNumber + " does not exist.");
             ConsoleUtil.pressEnterToContinue();
@@ -259,8 +269,9 @@ public class Main {
 
         trainService.displayTrainDetails(trainNumber);
 
-        String fromStation = ConsoleUtil.readString("Enter Boarding Station Code");
-        String toStation = ConsoleUtil.readString("Enter Destination Station Code");
+        String fromCity = ConsoleUtil.readString("Enter Boarding City");
+        String toCity = ConsoleUtil.readString("Enter Destination City");
+
         String travelClass = ConsoleUtil.readString("Enter Travel Class (SL / 3A / 2A / 1A)").toUpperCase();
         String travelDate = ConsoleUtil.readString("Enter Travel Date (YYYY-MM-DD)");
 
@@ -272,23 +283,29 @@ public class Main {
             String pName = ConsoleUtil.readString("Full Name");
             int pAge = ConsoleUtil.readInt("Age", 1, 120);
             String pGender = ConsoleUtil.readString("Gender (Male/Female/Other)");
+
             passengerList.add(new BookingService.PassengerInput(pName, pAge, pGender));
         }
 
         try {
             Ticket ticket = bookingService.bookTicket(passenger.getUsername(), trainNumber,
-                    travelClass, travelDate, fromStation, toStation, passengerList);
+                    travelClass, travelDate, fromCity, toCity, passengerList);
+
             ConsoleUtil.printSuccess("Booking Confirmed successfully!");
             ticket.printTicket();
+
         } catch (BookingService.BookingException e) {
             ConsoleUtil.printError("Booking Failed: " + e.getMessage());
         }
+
         ConsoleUtil.pressEnterToContinue();
     }
 
     public void handleViewMyBookings(Passenger passenger) {
         ConsoleUtil.printSubHeader("My Booking History");
+
         List<Booking> bookings = bookingService.getBookingsByUser(passenger.getUsername());
+
         if (bookings.isEmpty()) {
             ConsoleUtil.printInfo("You have not booked any tickets yet.");
         } else {
@@ -296,6 +313,7 @@ public class Main {
                 System.out.println(b);
             }
         }
+
         ConsoleUtil.pressEnterToContinue();
     }
 
@@ -305,81 +323,102 @@ public class Main {
 
         try {
             boolean cancelled = bookingService.cancelTicket(pnr);
+
             if (cancelled) {
                 ConsoleUtil.printSuccess("Ticket for PNR " + pnr + " has been cancelled. Seats released to inventory.");
             }
+
         } catch (BookingService.BookingException e) {
             ConsoleUtil.printError("Cancellation Failed: " + e.getMessage());
         }
+
         ConsoleUtil.pressEnterToContinue();
     }
 
     public void handleAddTrain() {
         ConsoleUtil.printSubHeader("Admin: Register New Train");
+
         String trainNumber = ConsoleUtil.readString("Enter 5-Digit Train Number");
         String trainName = ConsoleUtil.readString("Enter Train Name");
         String trainType = ConsoleUtil.readString("Enter Train Type (EXPRESS / SUPERFAST / RAJDHANI)");
-        String src = ConsoleUtil.readString("Enter Source Station Code");
-        String dest = ConsoleUtil.readString("Enter Destination Station Code");
 
-        Route route = new Route("R-" + trainNumber, src, dest);
+        String src = ConsoleUtil.readString("Enter Source City");
+        String dest = ConsoleUtil.readString("Enter Destination City");
+
+        Route route = new Route();
+
         route.addStop(src, 0.0, "START", "08:00");
         route.addStop(dest, 500.0, "16:00", "END");
 
         Train newTrain = new Train(trainNumber, trainName, trainType, src, dest, route);
+
         newTrain.addCoach(new Coach("S1", "SL", 6, 4));
         newTrain.addCoach(new Coach("B1", "3A", 6, 4));
 
         try {
             trainService.addTrain(newTrain);
             ConsoleUtil.printSuccess("Train " + trainNumber + " (" + trainName + ") added successfully with 48 seats.");
+
         } catch (InputValidator.ValidationException e) {
             ConsoleUtil.printError("Failed to add train: " + e.getMessage());
         }
+
         ConsoleUtil.pressEnterToContinue();
     }
 
     public void handleViewAllTrains() {
         ConsoleUtil.printSubHeader("Admin: All Registered Trains");
+
         List<Train> trains = trainService.getAllTrains();
-        System.out.printf("%-6s | %-24s | %-12s | %-6s -> %-6s | %s%n",
-                "Train#", "Train Name", "Type", "Source", "Dest", "Total Seats");
+
+        System.out.printf("%-6s | %-24s | %-12s | %-20s -> %-20s | %s%n",
+                "Train#", "Train Name", "Type", "Source City", "Destination City", "Total Seats");
+
         ConsoleUtil.printDivider();
+
         for (Train t : trains) {
             System.out.println(t);
         }
+
         ConsoleUtil.pressEnterToContinue();
     }
 
     public void handleAddStation() {
         ConsoleUtil.printSubHeader("Admin: Register New Station");
-        String code = ConsoleUtil.readString("Enter Station Code (e.g. GKP, LKO)");
+
         String name = ConsoleUtil.readString("Enter Station Name");
-        String city = ConsoleUtil.readString("Enter City");
+        String city = ConsoleUtil.readString("Enter City Name");
         int platforms = ConsoleUtil.readInt("Enter Number of Platforms", 1, 50);
 
-        Station station = new Station(code, name, city, platforms);
+        Station station = new Station(name, city, platforms);
+
         try {
             trainService.addStation(station);
-            ConsoleUtil.printSuccess("Station " + code + " (" + name + ") added successfully.");
+            ConsoleUtil.printSuccess("Station " + name + " in " + city + " added successfully.");
+
         } catch (InputValidator.ValidationException e) {
             ConsoleUtil.printError("Failed to add station: " + e.getMessage());
         }
+
         ConsoleUtil.pressEnterToContinue();
     }
 
     public void handleViewAllBookings() {
         ConsoleUtil.printSubHeader("Admin: System-Wide Reservations");
+
         List<Booking> allBookings = bookingService.getAllBookings();
+
         if (allBookings.isEmpty()) {
             ConsoleUtil.printInfo("No bookings currently in system.");
         } else {
             System.out.println("Total Reservations: " + allBookings.size());
             ConsoleUtil.printDivider();
+
             for (Booking b : allBookings) {
                 System.out.println(b);
             }
         }
+
         ConsoleUtil.pressEnterToContinue();
     }
 }
