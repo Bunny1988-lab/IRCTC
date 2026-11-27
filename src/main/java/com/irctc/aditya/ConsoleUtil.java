@@ -56,21 +56,6 @@ public class ConsoleUtil {
         }
     }
 
-    public static double readDouble(String prompt, double min, double max) {
-        while (true) {
-            System.out.print(prompt + ": ");
-            String input = SCANNER.nextLine();
-            try {
-                double value = Double.parseDouble(input.trim());
-                if (value >= min && value <= max) {
-                    return value;
-                }
-                System.out.println("[ERROR] Please enter a value between " + min + " and " + max + ".");
-            } catch (NumberFormatException e) {
-                System.out.println("[ERROR] Invalid number format. Please enter a decimal value.");
-            }
-        }
-    }
 
     public static void pressEnterToContinue() {
         System.out.print("\nPress [Enter] to continue...");
