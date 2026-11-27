@@ -6,11 +6,9 @@ import com.irctc.aditya.InputValidator;
 public class AuthService {
 
     private final InMemoryDataStore dataStore;
-    private User currentUser;
 
     public AuthService(InMemoryDataStore dataStore) {
         this.dataStore = dataStore;
-        this.currentUser = null;
     }
 
     public User login(String username, String password) throws InputValidator.ValidationException {
@@ -30,7 +28,6 @@ public class AuthService {
             throw new InputValidator.ValidationException("Invalid password. Please try again.");
         }
 
-        this.currentUser = user;
         return user;
     }
 
@@ -57,19 +54,4 @@ public class AuthService {
         return newPassenger;
     }
 
-    public void logout() {
-        this.currentUser = null;
-    }
-
-    public User getCurrentUser() {
-        return currentUser;
-    }
-
-    public boolean isLoggedIn() {
-        return currentUser != null;
-    }
-
-    public boolean isAdmin() {
-        return currentUser instanceof Admin;
-    }
 }
