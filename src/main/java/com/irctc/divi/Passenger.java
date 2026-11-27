@@ -5,15 +5,11 @@ import java.util.List;
 
 public class Passenger extends User {
 
+    // Removed: no-argument Passenger() constructor.
+    // The application always creates passengers with complete registration details.
     private int age;
     private String gender;
     private List<String> bookedPnrs;
-
-    public Passenger() {
-        super();
-        this.role = "PASSENGER";
-        this.bookedPnrs = new ArrayList<>();
-    }
 
     public Passenger(String userId, String username, String password, String fullName,
                      String email, String phone, int age, String gender) {
@@ -43,31 +39,15 @@ public class Passenger extends User {
         }
     }
 
-    public void removePnr(String pnr) {
-        bookedPnrs.remove(pnr);
-    }
-
+    // Removed: removePnr(), setAge(), setGender(),
+    // getBookedPnrs(), and setBookedPnrs().
+    // These methods had no callers or runtime effect.
     public int getAge() {
         return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
     }
 
     public String getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public List<String> getBookedPnrs() {
-        return bookedPnrs;
-    }
-
-    public void setBookedPnrs(List<String> bookedPnrs) {
-        this.bookedPnrs = bookedPnrs;
-    }
 }
